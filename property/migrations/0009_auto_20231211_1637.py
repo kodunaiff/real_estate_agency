@@ -6,19 +6,19 @@ from django.db import migrations
 
 def convert_phone_number(apps, schema_editor):
     Flat = apps.get_model('property', 'Flat')
-    for flat in Flat.objects.all():
+    flats = Flat.objects.all()
+    for flat in flats.iterator():
         pure_number = phonenumbers.parse(flat.owners_phonenumber, 'RU')
-        if not phonenumbers.is_valid_number(pure_number):
-            flat.owner_pure_phone = 'не установлен'
-            flat.save()
-        else:
+        if phonenumbers.is_valid_number(pure_number):
             flat.owner_pure_phone = pure_number
             flat.save()
 
 
+
 def move_backward(apps, schema_editor):
     Flat = apps.get_model('property', 'Flat')
-    for flat in Flat.objects.all():
+    flats = Flat.objects.all()
+    for flat in flats.iterator():
         flat.owner_pure_phone = None
         flat.save()
 
